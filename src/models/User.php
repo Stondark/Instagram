@@ -2,7 +2,6 @@
 
 namespace Stondark\Instagramtest\models;
 
-use Error;
 use PDO;
 use PDOException;
 use Stondark\Instagramtest\libs\Database;
@@ -88,6 +87,41 @@ class User extends Model{
             return NULL;
         }
     }
+
+    public static function getUserById(string $user_id ): User{
+        try{
+            $db = new Database();
+            $query = $db->connect()->prepare("SELECT * FROM users WHERE user_id = :user_id");
+            $query->execute([
+                "user_id" => $user_id
+            ]);
+            $data = $query->fetch(PDO::FETCH_ASSOC);
+            $user = new User($data["username"], $data["password"]);
+            $user->setID($data["user_id"]); 
+            $user->setProfile($data["profile"]);
+            
+            return $user;
+        } catch(PDOException $e){
+            error_log($e->getMessage());
+            return NULL;
+        }
+    }
+
+    public function publish(PostImage $post){
+        try {
+            $query = $this->prepare("INSERT INTO posts (user_id, title, media) VALUES(:user_id, :title, :media)");
+            $query->execute([
+                "user_id"=> $this->id,
+                "title"=> $post->getTitle(),
+                "media"=> $post->getImage(),
+            ]);
+
+        } catch (PDOException $e) {
+            //throw $th;
+        }
+    }
+
+
 
     public function getID(){
         return $this->id;

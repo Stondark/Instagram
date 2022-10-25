@@ -36,9 +36,6 @@ $router->get("/profile", function() {
     echo "Profile";
 });
 
-$router->get("/profile", function() {
-    echo "Profile";
-});
 
 $router->get("/invalid", function() {
     echo "Error";
@@ -59,7 +56,9 @@ $router->post("/auth", function() {
 });
 
 $router->post("/publish", function() {
-    echo "Inicio";
+    $user = unserialize($_SESSION['user']);
+    $controller = new Home($user);
+    $controller->store();
 });
 
 
